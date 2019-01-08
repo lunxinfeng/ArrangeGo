@@ -23,8 +23,24 @@ class StageController {
         info(stages.keys.toString())
     }
 
+    fun removeStage(name: String){
+        stages.remove(name)
+        info("removeStage $name")
+    }
+
+
     fun getStage(name: String): Stage? {
         return stages[name]
+    }
+
+    fun loadFxml(resource: String): Pane? {
+        val loader = FXMLLoader(javaClass.getResource(resource))
+
+        val pane = loader.load<Pane>()
+        info("load fxml:$resource")
+        val controlledStage = loader.getController<ControlledStage>()
+        controlledStage.setStageController(this)
+        return pane
     }
 
     fun loadStage(name: String, resource: String, title: String, style: StageStyle = StageStyle.DECORATED, modality: Modality = Modality.NONE) {

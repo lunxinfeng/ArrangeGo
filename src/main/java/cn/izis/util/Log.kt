@@ -9,3 +9,8 @@ fun info(msg: String) {
     if (debug)
         logger.info(msg)
 }
+
+fun warning(msg: String) {
+    if (debug)
+        logger.warning(msg)
+}

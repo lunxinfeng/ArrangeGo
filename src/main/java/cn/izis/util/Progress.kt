@@ -28,5 +28,6 @@ abstract class Progress<T>(
 ) {
     override fun doOnError(errorMessage: String) {
         toast(errorMessage)
+        warning(errorMessage)
     }
 }

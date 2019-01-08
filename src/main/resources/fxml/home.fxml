@@ -1,25 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import com.jfoenix.controls.JFXButton?>
 <?import com.jfoenix.controls.JFXTabPane?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane prefHeight="200.0" prefWidth="200.0" styleClass="root" stylesheets="@../css/home.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.izis.controller.HomeController">
+<BorderPane prefHeight="200.0" prefWidth="200.0" styleClass="root" stylesheets="@../css/home.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.izis.work.HomeController">
    <center>
       <VBox BorderPane.alignment="CENTER">
          <children>
-            <JFXTabPane rotateGraphic="true" VBox.vgrow="ALWAYS">
+            <JFXTabPane fx:id="tabPane" rotateGraphic="true" VBox.vgrow="ALWAYS">
                <tabs>
                   <Tab text="比赛信息">
                     <content>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0">
-                           <children>
-                              <JFXButton layoutX="88.0" layoutY="53.0" onAction="#onCreateMatch" text="新建比赛" />
-                           </children>
-                        </AnchorPane>
+                        <!--<fx:include source="tab_match_info.fxml"/>-->
                     </content>
                   </Tab>
                   <Tab text="比赛编排">
