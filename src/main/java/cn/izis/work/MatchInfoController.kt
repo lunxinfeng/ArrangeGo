@@ -66,7 +66,7 @@ class MatchInfoController : BaseController() {
     override fun initialize(location: URL?, resources: ResourceBundle?) {
         table_round.widthProperty().addListener { _, _, newValue ->
             col_round.minWidth = newValue.toDouble() * 0.15
-            col_time.minWidth = newValue.toDouble() * 0.85
+            col_time.minWidth = newValue.toDouble() * 0.8
         }
         col_round.cellValueFactory = PropertyValueFactory<MatchRound, Int>("roundIndex")
         col_time.cellValueFactory = PropertyValueFactory<MatchRound, Long?>("time_start")

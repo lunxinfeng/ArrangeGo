@@ -86,7 +86,7 @@
                   <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                </columnResizePolicy>
             </TableView>
-            <VBox alignment="CENTER" prefWidth="100.0" spacing="20.0">
+            <VBox alignment="CENTER" maxWidth="1.7976931348623157E308" minWidth="-Infinity" prefWidth="100.0" spacing="20.0">
                <children>
                   <JFXButton fx:id="btnAddRound" onAction="#onAddRound" text="添加轮次" />
                   <JFXButton fx:id="btnDelRound" onAction="#onDeleteRound" text="删除轮次" />
