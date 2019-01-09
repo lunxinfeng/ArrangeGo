@@ -1,10 +1,13 @@
+@file:Suppress("PropertyName")
+
 package cn.izis.bean
 
 import cn.izis.util.toTime
 import javafx.beans.property.SimpleIntegerProperty
 import javafx.beans.property.SimpleLongProperty
 import javafx.beans.property.SimpleStringProperty
-
+import javafx.collections.FXCollections
+import javafx.collections.ObservableList
 
 class Match(){
         constructor(
@@ -103,6 +106,8 @@ class Match(){
                 set(value) {matchIdProperty.set(value)}
         val matchIdProperty = SimpleIntegerProperty()
 
+        var match_round_list:ObservableList<MatchRound> = FXCollections.observableArrayList()
+
         fun copy(match:Match){
                 this.match_name = match.match_name
                 this.sponsor = match.sponsor
@@ -116,15 +121,9 @@ class Match(){
                 this.match_referee = match.match_referee
                 this.match_arrange = match.match_arrange
                 this.match_id = match.match_id
+
+                this.match_round_list.clear()
+                this.match_round_list.addAll(match.match_round_list)
         }
 
 }
-
-data class Person(
-        val index:Int,//编号
-        val name:String,//名字
-        val age:Int,//年龄
-        val sex:Int,//性别  1男 2女
-        val company:String,//公司
-        val phone:String//电话
-)

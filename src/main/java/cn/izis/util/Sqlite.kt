@@ -1,6 +1,8 @@
 package cn.izis.util
 
 import cn.izis.bean.Match
+import cn.izis.bean.MatchRound
+import java.lang.Exception
 import java.sql.DriverManager
 
 fun getConn() = DriverManager.getConnection("jdbc:sqlite:match.db")
@@ -11,7 +13,7 @@ fun createMatch(match: Match): Int {
         val tableIsExist = "select count(*)  from sqlite_master where type='table' and name = 'match'"
         val resultSet = statement.executeQuery(tableIsExist)
         if (resultSet.getInt("count(*)") == 0) {
-            val sql = "create table match(" +
+            val createMatchSql = "create table match(" +
                     " match_id integer primary key AUTOINCREMENT," +
                     " match_name text," +
                     " sponsor text," +
@@ -24,7 +26,14 @@ fun createMatch(match: Match): Int {
                     " match_time_end text," +
                     " match_referee text," +
                     " match_arrange text )"
-            statement.executeUpdate(sql)
+            statement.executeUpdate(createMatchSql)
+
+            val createMatchRoundSql = "create table match_round(" +
+                    " id integer primary key AUTOINCREMENT," +
+                    " match_id integer," +
+                    " round_index integer," +
+                    " time_start text)"
+            statement.executeUpdate(createMatchRoundSql)
         }
 
         val insertMatch = "insert into match values (" +
@@ -52,29 +61,47 @@ fun createMatch(match: Match): Int {
 
 fun queryMatch(matchId: Int = 0): Match? {
     getConn()?.let {
-        val statement = it.createStatement()
-        val queryLastSql = if (matchId == 0)
-            "select * from match order by match_id desc limit 1"
-        else
-            "select * from match where match_id = $matchId limit 1"
+        try {
+            val statement = it.createStatement()
+            val queryLastSql = if (matchId == 0)
+//            "select * from match order by match_id desc limit 1"
+                "SELECT m.*,r.round_index,r.time_start FROM (SELECT * FROM match ORDER BY match_id DESC limit 1) AS m LEFT JOIN match_round AS r"
+            else
+//            "select * from match where match_id = $matchId"
+                "select m.*,r.round_index,r.time_start from match as m LEFT JOIN match_round as r where m.match_id = $matchId"
 
-        val result = statement.executeQuery(queryLastSql)
-        val match = Match(
-            match_name = result.getString("match_name"),
-            sponsor = result.getString("sponsor"),
-            organizer = result.getString("organizer"),
-            co_organizer = result.getString("co_organizer"),
-            supporting = result.getString("supporting"),
-            match_arbitration = result.getString("match_arbitration"),
-            match_address = result.getString("match_address"),
-            match_time_start = result.getLong("match_time_start"),
-            match_time_end = result.getLong("match_time_end"),
-            match_referee = result.getString("match_referee"),
-            match_arrange = result.getString("match_arrange"),
-            match_id = result.getInt("match_id")
-        )
-        it.close()
-        return match
+            val result = statement.executeQuery(queryLastSql)
+
+            val match = Match(
+                match_name = result.getString("match_name"),
+                sponsor = result.getString("sponsor"),
+                organizer = result.getString("organizer"),
+                co_organizer = result.getString("co_organizer"),
+                supporting = result.getString("supporting"),
+                match_arbitration = result.getString("match_arbitration"),
+                match_address = result.getString("match_address"),
+                match_time_start = result.getLong("match_time_start"),
+                match_time_end = result.getLong("match_time_end"),
+                match_referee = result.getString("match_referee"),
+                match_arrange = result.getString("match_arrange"),
+                match_id = result.getInt("match_id")
+            ).apply {
+                while (result.next()){
+                    val roundIndex = result.getInt("round_index")
+                    if (roundIndex <= 0) continue
+                    val timeStart = result.getLong("time_start")
+                    match_round_list.add(MatchRound(roundIndex,this.match_id).apply {
+                        this.time_start = timeStart
+                    })
+                }
+            }
+            return match
+        } catch (e: Exception) {
+            e.printStackTrace()
+            info(e.message?:"未知错误")
+        } finally {
+            it.close()
+        }
     }
     return null
 }
@@ -101,4 +128,26 @@ fun updateMatch(match: Match): Int {
         return result
     }
     return 0
+}
+
+fun saveMatchRound(match: Match): Int {
+    var result = 0
+    getConn()?.let {
+        val delSql = "delete from match_round where match_id = ${match.match_id}"
+        val statement = it.createStatement()
+        result = statement.executeUpdate(delSql)
+
+        if (match.match_round_list.size > 0){
+            val insertSql = "insert into match_round values ( null , ${match.match_id} , ?,?)"
+            val preStatement = it.prepareStatement(insertSql)
+            match.match_round_list.forEach { round ->
+                preStatement.setInt(1,round.roundIndex)
+                preStatement.setLong(2,round.time_start)
+                preStatement.addBatch()
+            }
+            result = preStatement.executeBatch().size
+        }
+        it.close()
+    }
+    return result
 }
