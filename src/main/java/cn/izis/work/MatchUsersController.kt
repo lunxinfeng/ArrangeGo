@@ -29,12 +29,18 @@ class MatchUsersController: BaseController() {
     lateinit var col_age:TableColumn<User,String>
 
     override fun initialize(location: URL?, resources: ResourceBundle?) {
-        col_index.cellValueFactory = PropertyValueFactory<User,String>("index")
-        col_name.cellValueFactory = PropertyValueFactory<User,String>("name")
-        col_sex.cellValueFactory = PropertyValueFactory<User,String>("sex")
-        col_company.cellValueFactory = PropertyValueFactory<User,String>("company")
-        col_phone.cellValueFactory = PropertyValueFactory<User,String>("phone")
-        col_age.cellValueFactory = PropertyValueFactory<User,String>("age")
+        configTableView()
+
+        subscribeEvent()
+    }
+
+    private fun configTableView() {
+        col_index.cellValueFactory = PropertyValueFactory<User, String>("index")
+        col_name.cellValueFactory = PropertyValueFactory<User, String>("name")
+        col_sex.cellValueFactory = PropertyValueFactory<User, String>("sex")
+        col_company.cellValueFactory = PropertyValueFactory<User, String>("company")
+        col_phone.cellValueFactory = PropertyValueFactory<User, String>("phone")
+        col_age.cellValueFactory = PropertyValueFactory<User, String>("age")
 
         col_index.cellFactory = TextFieldTableCell.forTableColumn()
         col_name.cellFactory = TextFieldTableCell.forTableColumn()
@@ -43,7 +49,24 @@ class MatchUsersController: BaseController() {
         col_phone.cellFactory = TextFieldTableCell.forTableColumn()
         col_age.cellFactory = TextFieldTableCell.forTableColumn()
 
-        subscribeEvent()
+        col_index.setOnEditCommit {
+            it.rowValue.index = it.newValue
+        }
+        col_name.setOnEditCommit {
+            it.rowValue.name = it.newValue
+        }
+        col_sex.setOnEditCommit {
+            it.rowValue.sex = it.newValue
+        }
+        col_company.setOnEditCommit {
+            it.rowValue.company = it.newValue
+        }
+        col_phone.setOnEditCommit {
+            it.rowValue.phone = it.newValue
+        }
+        col_age.setOnEditCommit {
+            it.rowValue.age = it.newValue
+        }
     }
 
     override fun onReceive(rxEvent: RxEvent) {
@@ -104,7 +127,7 @@ class MatchUsersController: BaseController() {
     fun onSaveUsers(actionEvent: ActionEvent) {
         Observable
             .create<Int> { emmit ->
-                val result = addUser(1,table_users.items)
+                val result = saveUsers(1,table_users.items)
                 emmit.onNext(result)
                 emmit.onComplete()
             }
@@ -118,7 +141,19 @@ class MatchUsersController: BaseController() {
      * 导出到excel
      */
     fun onExportExcel(actionEvent: ActionEvent) {
-
+        val file = saveDialog(
+            owner = stageController?.getStage(stage_home),
+            filters = *arrayOf(FILE_FILTER_EXCEL_XLS, FILE_FILTER_EXCEL_XLSX)
+        )
+        file?.let {
+            Observable
+                .create<Int> { emmit ->
+                    saveUsersToExcel(file,table_users.items)
+                    emmit.onComplete()
+                }
+                .compose(Transformer.io_main())
+                .subscribe()
+        }
     }
 
     /**

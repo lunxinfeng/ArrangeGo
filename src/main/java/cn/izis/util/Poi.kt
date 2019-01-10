@@ -13,6 +13,9 @@ import javafx.beans.value.ObservableValue
 import javafx.collections.FXCollections
 import javafx.scene.control.ProgressIndicator
 import javafx.util.Callback
+import org.apache.poi.hssf.usermodel.HSSFCell
+import org.apache.poi.ss.usermodel.CellType
+import java.io.FileOutputStream
 
 
 fun readExcel(
@@ -65,19 +68,19 @@ fun readUsersFromExcel(
                 if (row.rowNum == 0){ //第一行，题头
 
                 }else{
-                    val person = User()
+                    val user = User()
                     row.cellIterator().forEach { cell -> //遍历每行的单元格
                         //rowIndex columnIndex都从0开始
-                        person.index = cell.rowIndex.toString()
+                        user.index = cell.rowIndex.toString()
                         when (cell.columnIndex){
-                            0 -> person.name = cell.stringCellValue
-                            1 -> person.sex = cell.stringCellValue
-                            2 -> person.company = cell.stringCellValue
-                            3 -> person.phone = cell.stringCellValue
-                            4 -> person.age = cell.stringCellValue
+                            0 -> user.name = cell.stringCellValue
+                            1 -> user.sex = cell.stringCellValue
+                            2 -> user.company = cell.stringCellValue
+                            3 -> user.phone = cell.stringCellValue
+                            4 -> user.age = cell.stringCellValue
                         }
                     }
-                    data.add(person)
+                    data.add(user)
                 }
             }
             true
@@ -85,6 +88,53 @@ fun readUsersFromExcel(
     }
     return data
 }
+
+fun saveUsersToExcel(
+    file: File,
+    data: List<User>
+){
+    if (!file.exists())
+        file.createNewFile()
+    val workBook = when{
+        file.name.endsWith(".xls") -> HSSFWorkbookFactory.createWorkbook()
+        file.name.endsWith(".xlsx") -> XSSFWorkbookFactory.createWorkbook()
+        else -> null
+    }
+    workBook?.let {
+        val sheet = workBook.createSheet("参赛名单")
+        val rowTitle = sheet.createRow(0)
+        val titles = arrayOf("姓名","性别","年龄","联系方式","单位")
+        for ((index, t_name) in titles.withIndex()){
+            rowTitle.createCell(index).apply {
+                cellType = CellType.STRING
+                setCellValue(t_name)
+            }
+        }
+        data.forEachIndexed { index, user ->
+            val row = sheet.createRow(index + 1)
+            for (col_num in 0 .. titles.size){
+                row.createCell(col_num).apply {
+                    cellType = CellType.STRING
+                    when(col_num){
+                        0 -> setCellValue(user.name)
+                        1 -> setCellValue(user.sex)
+                        2 -> setCellValue(user.age)
+                        3 -> setCellValue(user.phone)
+                        4 -> setCellValue(user.company)
+                    }
+                }
+            }
+        }
+
+        val outputStream = FileOutputStream(file)
+        workBook.write(outputStream)
+        outputStream.close()
+        workBook.close()
+    }
+}
+
+
+
 
 /**
  * 动态生成列

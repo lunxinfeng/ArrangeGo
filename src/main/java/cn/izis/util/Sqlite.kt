@@ -153,7 +153,7 @@ fun saveMatchRound(match: Match): Int {
     return result
 }
 
-fun addUser(matchId:Int, users:List<User>): Int {
+fun saveUsers(matchId:Int, users:List<User>): Int {
     var result = 0
     getConn()?.let {
         val statement = it.createStatement()
