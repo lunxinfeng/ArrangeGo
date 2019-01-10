@@ -30,6 +30,11 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.util.*
 
+/**
+ * 当前展示的赛事
+ */
+var matchCurr: Match = Match()
+
 class MatchInfoController : BaseController() {
     @FXML
     lateinit var tf_match_name: JFXTextField
@@ -58,10 +63,7 @@ class MatchInfoController : BaseController() {
     @FXML
     lateinit var col_time: TableColumn<MatchRound, Long?>
 
-    /**
-     * 当前展示的赛事
-     */
-    private var match: Match = Match()
+
 
     override fun initialize(location: URL?, resources: ResourceBundle?) {
         table_round.widthProperty().addListener { _, _, newValue ->
@@ -72,18 +74,18 @@ class MatchInfoController : BaseController() {
         col_time.cellValueFactory = PropertyValueFactory<MatchRound, Long?>("time_start")
         col_time.setCellFactory { MyCell() }
 
-        table_round.items = match.match_round_list
-        tf_match_name.textProperty().bind(match.matchNameProperty)
-        tf_sponsor.textProperty().bind(match.sponsorProperty)
-        tf_match_address.textProperty().bind(match.matchAddressProperty)
-        tf_match_referee.textProperty().bind(match.matchRefereeProperty)
-        tf_match_arrange.textProperty().bind(match.matchArrangeProperty)
-        tf_match_start_time.textProperty().bind(match.matchTimeStartStringProperty)
-        tf_match_end_time.textProperty().bind(match.matchTimeEndStringProperty)
+        table_round.items = matchCurr.match_round_list
+        tf_match_name.textProperty().bind(matchCurr.matchNameProperty)
+        tf_sponsor.textProperty().bind(matchCurr.sponsorProperty)
+        tf_match_address.textProperty().bind(matchCurr.matchAddressProperty)
+        tf_match_referee.textProperty().bind(matchCurr.matchRefereeProperty)
+        tf_match_arrange.textProperty().bind(matchCurr.matchArrangeProperty)
+        tf_match_start_time.textProperty().bind(matchCurr.matchTimeStartStringProperty)
+        tf_match_end_time.textProperty().bind(matchCurr.matchTimeEndStringProperty)
 
-        btnEditMatch.disableProperty().bind(match.matchNameProperty.isNull)
-        btnAddRound.disableProperty().bind(match.matchNameProperty.isNull)
-        btnDelRound.disableProperty().bind(Bindings.isEmpty(match.match_round_list))
+        btnEditMatch.disableProperty().bind(matchCurr.matchNameProperty.isNull)
+        btnAddRound.disableProperty().bind(matchCurr.matchNameProperty.isNull)
+        btnDelRound.disableProperty().bind(Bindings.isEmpty(matchCurr.match_round_list))
 
         getMatch()
         subscribeEvent()
@@ -109,7 +111,7 @@ class MatchInfoController : BaseController() {
             }
             .compose(Transformer.io_main())
             .sub {
-                match.copy(it)
+                matchCurr.copy(it)
             }
     }
 
@@ -131,23 +133,23 @@ class MatchInfoController : BaseController() {
             stage_home, stage_create_match, "/fxml/create_match.fxml", "编辑比赛",
             StageStyle.UTILITY, Modality.APPLICATION_MODAL
         )
-        send(RxEvent.editMatch, match)
+        send(RxEvent.editMatch, matchCurr)
     }
 
     /**
      * 添加轮次
      */
     fun onAddRound(actionEvent: ActionEvent) {
-        val size = match.match_round_list.size
-        match.match_round_list.add(MatchRound(size + 1, match.match_id))
+        val size = matchCurr.match_round_list.size
+        matchCurr.match_round_list.add(MatchRound(size + 1, matchCurr.match_id))
     }
 
     /**
      * 删除最后一轮
      */
     fun onDeleteRound(actionEvent: ActionEvent) {
-        val size = match.match_round_list.size
-        match.match_round_list.removeAt(size - 1)
+        val size = matchCurr.match_round_list.size
+        matchCurr.match_round_list.removeAt(size - 1)
     }
 
     /**
@@ -156,7 +158,7 @@ class MatchInfoController : BaseController() {
     fun onSaveRound(actionEvent: ActionEvent) {
         Observable
             .create<Int> { emmit ->
-                val result = saveMatchRound(match)
+                val result = saveMatchRound(matchCurr)
                 emmit.onNext(result)
                 emmit.onComplete()
             }
@@ -177,13 +179,13 @@ class MatchInfoController : BaseController() {
                 date.apply {
                     value = item?.toLocalDateTime()?.toLocalDate() ?: LocalDate.now()
                     valueProperty().addListener { _, _, newValue ->
-                        match.match_round_list[index].time_start = getTime(newValue,time.value)
+                        matchCurr.match_round_list[index].time_start = getTime(newValue,time.value)
                     }
                 }
                 time.apply {
                     value = item?.toLocalDateTime()?.toLocalTime() ?: LocalTime.now()
                     valueProperty().addListener { _, _, newValue ->
-                        match.match_round_list[index].time_start = getTime(date.value,newValue)
+                        matchCurr.match_round_list[index].time_start = getTime(date.value,newValue)
                     }
                 }
 

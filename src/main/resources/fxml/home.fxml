@@ -2,9 +2,9 @@
 
 <?import com.jfoenix.controls.JFXTabPane?>
 <?import javafx.scene.control.Tab?>
-<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.VBox?>
+<?import org.controlsfx.control.StatusBar?>
 
 <BorderPane prefHeight="200.0" prefWidth="200.0" styleClass="root" stylesheets="@../css/home.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.izis.work.HomeController">
    <center>
@@ -12,38 +12,15 @@
          <children>
             <JFXTabPane fx:id="tabPane" rotateGraphic="true" VBox.vgrow="ALWAYS">
                <tabs>
-                  <Tab text="比赛信息">
-                    <content>
-                        <!--<fx:include source="tab_match_info.fxml"/>-->
-                    </content>
-                  </Tab>
-                  <Tab text="比赛编排">
-                    <content>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                    </content>
-                  </Tab>
-                  <Tab text="统计分析">
-                    <content>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                    </content>
-                  </Tab>
-                  <Tab text="参赛人员">
-                    <content>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                    </content>
-                  </Tab>
-                  <Tab text="历史赛事">
-                    <content>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                    </content>
-                  </Tab>
-                  <Tab text="帮助中心">
-                    <content>
-                      <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="180.0" prefWidth="200.0" />
-                    </content>
-                  </Tab>
+                  <Tab text="比赛信息"/>
+                  <Tab text="参赛人员" />
+                  <Tab text="比赛编排" />
+                  <Tab text="统计分析" />
+                  <Tab text="历史赛事" />
+                  <Tab text="帮助中心" />
                </tabs>
             </JFXTabPane>
+            <StatusBar fx:id="status_bar" />
          </children>
       </VBox>
    </center>

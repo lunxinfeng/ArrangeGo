@@ -2,6 +2,7 @@ package cn.izis.util
 
 import cn.izis.bean.Match
 import cn.izis.bean.MatchRound
+import cn.izis.bean.User
 import java.lang.Exception
 import java.sql.DriverManager
 
@@ -150,4 +151,65 @@ fun saveMatchRound(match: Match): Int {
         it.close()
     }
     return result
+}
+
+fun addUser(matchId:Int, users:List<User>): Int {
+    var result = 0
+    getConn()?.let {
+        val statement = it.createStatement()
+        val tableIsExist = "select count(*)  from sqlite_master where type='table' and name = 'match_users'"
+        val resultSet = statement.executeQuery(tableIsExist)
+        if (resultSet.getInt("count(*)") == 0) {
+            val createUsersSql = "create table match_users(" +
+                    " id integer primary key AUTOINCREMENT," +
+                    " match_id integer," +
+                    " name text," +
+                    " sex text," +
+                    " company text," +
+                    " phone text," +
+                    " age text)"
+            statement.executeUpdate(createUsersSql)
+        }
+
+        val delSql = "delete from match_users where match_id = $matchId"
+        result = statement.executeUpdate(delSql)
+
+        if (users.isNotEmpty()){
+            val insertSql = "insert into match_users values ( null , $matchId , ?,?,?,?,?)"
+            val preStatement = it.prepareStatement(insertSql)
+            users.forEach { user ->
+                preStatement.setString(1,user.name)
+                preStatement.setString(2,user.sex)
+                preStatement.setString(3,user.company)
+                preStatement.setString(4,user.phone)
+                preStatement.setString(5,user.age)
+                preStatement.addBatch()
+            }
+            result = preStatement.executeBatch().size
+        }
+        it.close()
+    }
+    return result
+}
+
+fun queryUsers(matchId:Int): MutableList<User> {
+    val list = mutableListOf<User>()
+    getConn()?.let {
+        val statement = it.createStatement()
+        val queryUsersSql = "select * from match_users where match_id = $matchId"
+        val result = statement.executeQuery(queryUsersSql)
+
+        while (result.next()){
+            list.add(User().apply {
+                name = result.getString("name")
+                sex = result.getString("sex")
+                company = result.getString("company")
+                phone = result.getString("phone")
+                age = result.getString("age")
+            })
+        }
+
+        it.close()
+    }
+    return list
 }

@@ -13,8 +13,11 @@ object Transformer {
     }
 }
 
-fun <T> Observable<T>.sub(onNext:(data:T) -> Unit){
-    this.subscribe(object : Progress<T>() {
+fun <T> Observable<T>.sub(
+    view:BaseView? = null,
+    onNext:(data:T) -> Unit
+){
+    this.subscribe(object : Progress<T>(view) {
         override fun doOnNext(data: T) {
             onNext.invoke(data)
         }

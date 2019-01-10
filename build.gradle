@@ -17,6 +17,7 @@ dependencies {
     compile "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
     testCompile group: 'junit', name: 'junit', version: '4.12'
     compile 'com.jfoenix:jfoenix:8.0.8'
+    compile group: 'org.controlsfx', name: 'controlsfx', version: '8.40.14'
     compile 'com.github.lunxinfeng.Tools:rx_retrofit:1.0.3-pre'
     compile group: 'org.apache.poi', name: 'poi', version: '4.0.1'
     compile group: 'org.apache.poi', name: 'poi-ooxml', version: '4.0.1'

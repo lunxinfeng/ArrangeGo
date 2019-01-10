@@ -58,7 +58,9 @@ class StageController {
         val scene = Scene(pane)
         val stage = Stage()
         stage.title = title
-        stage.scene = scene
+        stage.scene = scene.apply {
+            stylesheets.add("/css/base.css")
+        }
         controlledStage.setStage(stage, name)
 
         //配置
