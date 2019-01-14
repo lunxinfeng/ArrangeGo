@@ -1,3 +1,5 @@
+@file:Suppress("PropertyName")
+
 package cn.izis.work
 
 import cn.izis.base.BaseController
@@ -19,6 +21,7 @@ class HomeController:BaseController() {
             when (newValue.toInt()){
                 0 -> send(RxEvent.refreshMatchInfo)
                 1 -> send(RxEvent.refreshMatchUsers)
+                4 -> send(RxEvent.refreshMatchHistory)
             }
         }
 
@@ -41,6 +44,8 @@ class HomeController:BaseController() {
         super.setStageController(stageController)
         tabPane.tabs[0].content = stageController.loadFxml("/fxml/tab_match_info.fxml")
         tabPane.tabs[1].content = stageController.loadFxml("/fxml/tab_match_users.fxml")
+        tabPane.tabs[4].content = stageController.loadFxml("/fxml/tab_match_history.fxml")
+        tabPane.tabs[5].content = stageController.loadFxml("/fxml/tab_help_center.fxml")
     }
 
 }

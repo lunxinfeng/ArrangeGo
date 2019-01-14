@@ -4,3 +4,7 @@
     -fx-background-color: rgb(77,102,204);
     -fx-text-fill: WHITE;
 }
+
+.table-column{
+    -fx-alignment: center;
+}

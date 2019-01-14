@@ -213,3 +213,32 @@ fun queryUsers(matchId:Int): MutableList<User> {
     }
     return list
 }
+
+fun queryAllMatchsWithOutRound(): MutableList<Match> {
+    val list = mutableListOf<Match>()
+    getConn()?.let {
+        val statement = it.createStatement()
+        val queryUsersSql = "select * from match"
+        val result = statement.executeQuery(queryUsersSql)
+
+        while (result.next()){
+            list.add(Match(
+                match_name = result.getString("match_name"),
+                sponsor = result.getString("sponsor"),
+                organizer = result.getString("organizer"),
+                co_organizer = result.getString("co_organizer"),
+                supporting = result.getString("supporting"),
+                match_arbitration = result.getString("match_arbitration"),
+                match_address = result.getString("match_address"),
+                match_time_start = result.getLong("match_time_start"),
+                match_time_end = result.getLong("match_time_end"),
+                match_referee = result.getString("match_referee"),
+                match_arrange = result.getString("match_arrange"),
+                match_id = result.getInt("match_id")
+            ))
+        }
+
+        it.close()
+    }
+    return list
+}
