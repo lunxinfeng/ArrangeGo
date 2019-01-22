@@ -3,7 +3,7 @@
 package cn.izis.work
 
 import cn.izis.base.BaseController
-import cn.izis.bean.Match
+import cn.izis.bean.db.Match
 import cn.izis.util.*
 import cn.izis.util.rx.RxEvent
 import com.jfoenix.controls.JFXButton
@@ -51,7 +51,7 @@ open class MatchCreateController : BaseController() {
     /**
      * 上页面传过来的数据
      */
-    private var matchPre:Match? = null
+    private var matchPre: Match? = null
     /**
      * 本页面编辑的数据
      */
@@ -68,7 +68,7 @@ open class MatchCreateController : BaseController() {
             getTime(date_match_time_end.value, time_match_time_end.value),
             tf_match_referee.text,
             tf_match_arrange.text,
-            matchPre?.match_id?:0
+            matchPre?.match_id ?: 0
         )
 
     override fun initialize(location: URL?, resources: ResourceBundle?) {

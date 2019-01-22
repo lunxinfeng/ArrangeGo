@@ -1,6 +1,6 @@
 package cn.izis.util
 
-import cn.izis.bean.User
+import cn.izis.bean.db.MatchUser
 import javafx.beans.property.StringProperty
 import javafx.collections.ObservableList
 import javafx.scene.control.TableColumn
@@ -13,54 +13,19 @@ import javafx.beans.value.ObservableValue
 import javafx.collections.FXCollections
 import javafx.scene.control.ProgressIndicator
 import javafx.util.Callback
-import org.apache.poi.hssf.usermodel.HSSFCell
 import org.apache.poi.ss.usermodel.CellType
 import java.io.FileOutputStream
 
-
-fun readExcel(
-        file:File
-){
-    val workBook = when{
-        file.name.endsWith(".xls") -> HSSFWorkbookFactory.create(file.inputStream())
-        file.name.endsWith(".xlsx") -> XSSFWorkbookFactory.create(file.inputStream())
-        else -> null
-    }
-
-    workBook?.let { it ->
-        it.all {//遍历sheet
-            println(it.sheetName)
-            it.rowIterator().forEach { row -> //遍历行
-                println(row.rowNum)
-                if (row.rowNum != 0) {//跳过第一行题头
-                    row.cellIterator().forEach { cell -> //遍历每行的单元格
-                        println(cell)
-                    }
-                }
-            }
-
-            true
-        }
-    }
-}
-
-fun saveExcel(
-        file: File
-){
-    val workBook = XSSFWorkbookFactory.createWorkbook()
-    val sheet = workBook.createSheet()
-}
-
 fun readUsersFromExcel(
     file:File
-): ObservableList<User> {
+): ObservableList<MatchUser> {
     val workBook = when{
         file.name.endsWith(".xls") -> HSSFWorkbookFactory.create(file.inputStream())
         file.name.endsWith(".xlsx") -> XSSFWorkbookFactory.create(file.inputStream())
         else -> null
     }
 
-    val data = FXCollections.observableArrayList<User>()
+    val data = FXCollections.observableArrayList<MatchUser>()
     workBook?.let { it ->
         //        it.all { sheet ->//遍历sheet
         it.first { sheet ->//第一个sheet
@@ -68,10 +33,10 @@ fun readUsersFromExcel(
                 if (row.rowNum == 0){ //第一行，题头
 
                 }else{
-                    val user = User()
+                    val user = MatchUser()
                     row.cellIterator().forEach { cell -> //遍历每行的单元格
                         //rowIndex columnIndex都从0开始
-                        user.index = cell.rowIndex.toString()
+//                        user.index = cell.rowIndex.toString()
                         when (cell.columnIndex){
                             0 -> user.name = cell.stringCellValue
                             1 -> user.sex = cell.stringCellValue
@@ -91,7 +56,7 @@ fun readUsersFromExcel(
 
 fun saveUsersToExcel(
     file: File,
-    data: List<User>
+    data: List<MatchUser>
 ){
     if (!file.exists())
         file.createNewFile()

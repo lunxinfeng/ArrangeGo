@@ -17,7 +17,10 @@ public class RxEvent {
      * 刷新用户列表
      */
     public static final int refreshMatchUsers = 3;
-//    public static final int refreshMatchArrange = 4;
+    /**
+     * 刷新编排页面
+     */
+    public static final int refreshMatchArrange = 4;
     /**
      * 刷新历史赛事
      */

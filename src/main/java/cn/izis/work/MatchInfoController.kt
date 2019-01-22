@@ -5,8 +5,8 @@ package cn.izis.work
 import cn.izis.base.BaseController
 import cn.izis.base.stage_create_match
 import cn.izis.base.stage_home
-import cn.izis.bean.Match
-import cn.izis.bean.MatchRound
+import cn.izis.bean.db.Match
+import cn.izis.bean.db.MatchRound
 import cn.izis.util.*
 import cn.izis.util.rx.RxEvent
 import com.jfoenix.controls.JFXButton

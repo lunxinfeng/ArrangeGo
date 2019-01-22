@@ -4,7 +4,7 @@ package cn.izis.work
 
 import cn.izis.base.BaseController
 import cn.izis.base.stage_home
-import cn.izis.bean.User
+import cn.izis.bean.db.MatchUser
 import cn.izis.util.*
 import cn.izis.util.rx.RxEvent
 import io.reactivex.Observable
@@ -20,13 +20,13 @@ import java.util.*
 
 class MatchUsersController: BaseController() {
     @FXML
-    lateinit var table_users:TableView<User>
-    lateinit var col_index:TableColumn<User,String>
-    lateinit var col_name:TableColumn<User,String>
-    lateinit var col_sex:TableColumn<User,String>
-    lateinit var col_company:TableColumn<User,String>
-    lateinit var col_phone:TableColumn<User,String>
-    lateinit var col_age:TableColumn<User,String>
+    lateinit var table_users:TableView<MatchUser>
+    lateinit var col_index:TableColumn<MatchUser,String>
+    lateinit var col_name:TableColumn<MatchUser,String>
+    lateinit var col_sex:TableColumn<MatchUser,String>
+    lateinit var col_company:TableColumn<MatchUser,String>
+    lateinit var col_phone:TableColumn<MatchUser,String>
+    lateinit var col_age:TableColumn<MatchUser,String>
 
     override fun initialize(location: URL?, resources: ResourceBundle?) {
         configTableView()
@@ -35,12 +35,12 @@ class MatchUsersController: BaseController() {
     }
 
     private fun configTableView() {
-        col_index.cellValueFactory = PropertyValueFactory<User, String>("index")
-        col_name.cellValueFactory = PropertyValueFactory<User, String>("name")
-        col_sex.cellValueFactory = PropertyValueFactory<User, String>("sex")
-        col_company.cellValueFactory = PropertyValueFactory<User, String>("company")
-        col_phone.cellValueFactory = PropertyValueFactory<User, String>("phone")
-        col_age.cellValueFactory = PropertyValueFactory<User, String>("age")
+        col_index.cellValueFactory = PropertyValueFactory<MatchUser, String>("index")
+        col_name.cellValueFactory = PropertyValueFactory<MatchUser, String>("name")
+        col_sex.cellValueFactory = PropertyValueFactory<MatchUser, String>("sex")
+        col_company.cellValueFactory = PropertyValueFactory<MatchUser, String>("company")
+        col_phone.cellValueFactory = PropertyValueFactory<MatchUser, String>("phone")
+        col_age.cellValueFactory = PropertyValueFactory<MatchUser, String>("age")
 
         col_index.cellFactory = TextFieldTableCell.forTableColumn()
         col_name.cellFactory = TextFieldTableCell.forTableColumn()
@@ -78,7 +78,7 @@ class MatchUsersController: BaseController() {
 
     private fun getUsers(matchId:Int){
         Observable
-            .create<List<User>> { emmit ->
+            .create<List<MatchUser>> { emmit ->
                 val result = queryUsers(matchId)
                 emmit.onNext(result)
                 emmit.onComplete()
@@ -94,7 +94,7 @@ class MatchUsersController: BaseController() {
      * 添加选手
      */
     fun onAddUser(actionEvent: ActionEvent) {
-        table_users.items.add(User())
+        table_users.items.add(MatchUser())
     }
 
     /**
@@ -108,7 +108,7 @@ class MatchUsersController: BaseController() {
 
         file?.let { f ->
             Observable
-                .create<ObservableList<User>> {
+                .create<ObservableList<MatchUser>> {
                     val data = readUsersFromExcel(f)
                     it.onNext(data)
                     it.onComplete()
@@ -124,7 +124,7 @@ class MatchUsersController: BaseController() {
     /**
      * 保存设置
      */
-    fun onSaveUsers(actionEvent: ActionEvent) {
+    fun onSaveUsers(actionEvent: ActionEvent?) {
         Observable
             .create<Int> { emmit ->
                 val result = saveUsers(1,table_users.items)
@@ -133,6 +133,7 @@ class MatchUsersController: BaseController() {
             }
             .compose(Transformer.io_main())
             .sub {
+                getUsers(matchCurr.match_id)
                 toast("保存用户${if (it > 0) "成功" else "失败"}")
             }
     }
@@ -157,9 +158,22 @@ class MatchUsersController: BaseController() {
     }
 
     /**
-     * 编排
+     * 编号
      */
     fun onArrange(actionEvent: ActionEvent) {
+        val list = mutableListOf<Int>()
+        for( i in 1..table_users.items.size){
+            list.add(i)
+        }
 
+        list.shuffle()
+
+        table_users.items.forEachIndexed { index, user ->
+            user.index = list[index].toString()
+        }
+
+        table_users.refresh()
+
+        onSaveUsers(null)
     }
 }

@@ -1,6 +1,6 @@
 @file:Suppress("PropertyName")
 
-package cn.izis.bean
+package cn.izis.bean.db
 
 import cn.izis.util.toTime
 import javafx.beans.property.SimpleIntegerProperty
@@ -108,7 +108,7 @@ class Match(){
 
         var match_round_list:ObservableList<MatchRound> = FXCollections.observableArrayList()
 
-        fun copy(match:Match){
+        fun copy(match: Match){
                 this.match_name = match.match_name
                 this.sponsor = match.sponsor
                 this.organizer = match.organizer

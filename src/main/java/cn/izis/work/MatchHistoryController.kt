@@ -3,7 +3,7 @@
 package cn.izis.work
 
 import cn.izis.base.BaseController
-import cn.izis.bean.Match
+import cn.izis.bean.db.Match
 import cn.izis.util.Transformer
 import cn.izis.util.queryAllMatchsWithOutRound
 import cn.izis.util.rx.RxEvent
