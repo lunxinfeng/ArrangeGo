@@ -54,6 +54,13 @@ fun createMatch(match: Match): Int {
                 ")"
         val result = statement.executeUpdate(insertMatch)
 
+        //创建比赛默认添加一轮
+        val queryMatchId = "select match_id from match order by match_id desc limit 1"
+        val id = statement.executeQuery(queryMatchId).getInt("match_id")
+        val round = MatchRound(1,id)
+        val insertRound = "replace into match_round values ( null , ${round.matchId} , ${round.roundIndex},${round.status},${round.time_start})"
+        statement.executeUpdate(insertRound)
+
         it.close()
 
         return result
@@ -73,10 +80,10 @@ fun queryMatch(matchId: Int = 0): Match? {
 
             val queryLastSql = if (matchId == 0)
 //            "select * from match order by match_id desc limit 1"
-                "SELECT m.*,r.* FROM (SELECT * FROM match ORDER BY match_id DESC limit 1) AS m LEFT JOIN match_round AS r"
+                "SELECT m.*,r.* FROM (SELECT * FROM match ORDER BY match_id DESC limit 1) AS m LEFT JOIN match_round AS r WHERE r.match_id = m.match_id"
             else
 //            "select * from match where match_id = $matchId"
-                "select m.*,r.* from match as m LEFT JOIN match_round as r where m.match_id = $matchId"
+                "select m.*,r.* from match as m LEFT JOIN match_round as r where m.match_id = $matchId AND r.match_id = $matchId"
 
             val result = statement.executeQuery(queryLastSql)
 
@@ -148,12 +155,12 @@ fun updateMatch(match: Match): Int {
 fun saveMatchRound(match: Match): Int {
     var result = 0
     getConn()?.let {
-        val delSql = "delete from match_round where match_id = ${match.match_id}"
-        val statement = it.createStatement()
-        result = statement.executeUpdate(delSql)
+//        val statement = it.createStatement()
+//        val delSql = "delete from match_round where match_id = ${match.match_id}"
+//        result = statement.executeUpdate(delSql)
 
         if (match.match_round_list.size > 0) {
-            val insertSql = "insert into match_round values ( ? , ${match.match_id} , ?,?,?)"
+            val insertSql = "replace into match_round values ( ? , ${match.match_id} , ?,?,?)"
             val preStatement = it.prepareStatement(insertSql)
             match.match_round_list.forEach { round ->
                 if (round.id == 0)

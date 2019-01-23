@@ -87,7 +87,7 @@ class MatchInfoController : BaseController() {
         btnAddRound.disableProperty().bind(matchCurr.matchNameProperty.isNull)
         btnDelRound.disableProperty().bind(Bindings.isEmpty(matchCurr.match_round_list))
 
-        getMatch()
+        getMatch(matchCurr.match_id)
         subscribeEvent()
     }
 
@@ -95,7 +95,7 @@ class MatchInfoController : BaseController() {
         super.onReceive(rxEvent)
         when (rxEvent.code) {
             RxEvent.refreshMatchInfo -> {
-                getMatch()
+                getMatch(matchCurr.match_id)
             }
         }
     }

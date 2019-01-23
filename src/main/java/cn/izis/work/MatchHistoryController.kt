@@ -5,11 +5,13 @@ package cn.izis.work
 import cn.izis.base.BaseController
 import cn.izis.bean.db.Match
 import cn.izis.util.Transformer
+import cn.izis.util.info
 import cn.izis.util.queryAllMatchsWithOutRound
 import cn.izis.util.rx.RxEvent
 import cn.izis.util.sub
 import io.reactivex.Observable
 import javafx.scene.control.TableColumn
+import javafx.scene.control.TableRow
 import javafx.scene.control.TableView
 import javafx.scene.control.cell.PropertyValueFactory
 import java.net.URL
@@ -43,6 +45,17 @@ class MatchHistoryController : BaseController() {
         tab_sponsor.cellValueFactory = PropertyValueFactory<Match, String>("sponsor")
         tab_referee.cellValueFactory = PropertyValueFactory<Match, String>("match_referee")
         tab_arrange.cellValueFactory = PropertyValueFactory<Match, String>("match_arrange")
+
+        tableView.setRowFactory {
+            val row = TableRow<Match>()
+            row.setOnMouseClicked {  event ->
+                if (event.clickCount == 2 && !row.isEmpty){
+                    info(row.item.match_name)
+                    matchCurr.copy(row.item)
+                }
+            }
+            row
+        }
     }
 
     private fun getHistoryMatchs(){

@@ -117,6 +117,7 @@ open class MatchCreateController : BaseController() {
             .sub {
                 if (it > 0) {
                     toast("创建比赛成功")
+                    matchCurr.match_id = 0
                     send(RxEvent.refreshMatchInfo)
                     closeSelf()
                 }
