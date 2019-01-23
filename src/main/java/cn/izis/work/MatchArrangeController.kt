@@ -2,7 +2,6 @@
 
 package cn.izis.work
 
-import cn.izis.base.Api
 import cn.izis.base.BaseController
 import cn.izis.bean.GameInfo
 import cn.izis.bean.db.MatchRound
@@ -11,7 +10,6 @@ import cn.izis.util.*
 import cn.izis.util.rx.RxEvent
 import com.jfoenix.controls.JFXButton
 import com.jfoenix.controls.JFXListView
-import com.lxf.rxretrofit.RetrofitHelper
 import io.reactivex.Observable
 import javafx.beans.binding.Bindings
 import javafx.beans.property.SimpleBooleanProperty
@@ -22,7 +20,6 @@ import javafx.scene.control.TableView
 import javafx.scene.control.cell.PropertyValueFactory
 import java.net.URL
 import java.util.*
-import kotlin.collections.HashMap
 
 class MatchArrangeController : BaseController() {
     lateinit var listViewRound: JFXListView<MatchRound>
@@ -48,7 +45,12 @@ class MatchArrangeController : BaseController() {
         configListView()
         configTableView()
 
-        val notEdit = Bindings.or(Bindings.or(btnFinish.disableProperty(),tableViewRound.selectionModel.selectedItemProperty().isNull),hasEmpty)
+        val notEdit = Bindings.or(
+            Bindings.or(
+                btnFinish.disableProperty(),
+                tableViewRound.selectionModel.selectedItemProperty().isNull
+            ), hasEmpty
+        )
 
         btnArrange.disableProperty().bind(Bindings.isNotEmpty(tableViewRound.items))
         btnWin.disableProperty().bind(notEdit)
@@ -61,8 +63,9 @@ class MatchArrangeController : BaseController() {
     private fun configListView() {
         listViewRound.selectionModel.selectedItemProperty().addListener { _, _, newValue ->
             tableViewRound.items.clear()
-            newValue?.let{
+            newValue?.let {
                 getGameInfos(matchCurr.match_id, it.roundIndex)
+                info("btnFinish \t ${it.status}")
                 btnFinish.isDisable = it.status == 1
             }
         }
@@ -79,8 +82,8 @@ class MatchArrangeController : BaseController() {
         tab_white.cellValueFactory = PropertyValueFactory<GameInfo, String>("whiteName")
 
         tableViewRound.selectionModel.selectedItemProperty().addListener { observable, oldValue, newValue ->
-            newValue?.let{
-                hasEmpty.set(it.whiteId == 9191)
+            newValue?.let {
+                hasEmpty.set(it.whiteId == 9191 || it.blackId == 9191)
             }
         }
     }
@@ -152,33 +155,53 @@ class MatchArrangeController : BaseController() {
      * 自动编排
      */
     fun onArrange(actionEvent: ActionEvent) {
-        arrange(matchCurr.match_id,listViewRound.selectionModel.selectedItem.roundIndex, matchUsers)
-        getGameInfos(matchCurr.match_id, listViewRound.selectionModel.selectedItem.roundIndex)
+        Observable
+            .create<List<MatchUser>> { emmit ->
+                val result = queryUsers(matchCurr.match_id)
+                emmit.onNext(result)
+                emmit.onComplete()
+            }
+            .flatMap {
+                Observable
+                    .create<Int> { emmit ->
+                        arrange(
+                            matchCurr.match_id,
+                            listViewRound.selectionModel.selectedItem.roundIndex,
+                            it.toMutableList()
+                        )
+                        emmit.onNext(1)
+                        emmit.onComplete()
+                    }
+            }
+            .compose(Transformer.io_main())
+            .sub {
+                getGameInfos(matchCurr.match_id, listViewRound.selectionModel.selectedItem.roundIndex)
+            }
     }
 
     /**
      * 结束本轮
      */
     fun onFinishRound(actionEvent: ActionEvent) {
-        RetrofitHelper.getInstance()
-            .baseUrl("http://apitest.yqlwq.cn")
-            .debug(true)
-            .create(Api::class.java)
-            .modifyPassword(HashMap<String, String>().apply {
-                put("old_password", "123456")
-                put("password", "234567")
-                put("password_confirmation", "234567")
-                put(
-                    "token",
-                    "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJodHRwOi8vYXBpdGVzdC55cWx3cS5jbi9hcGkvZ2FtZS91c2VyL2xvZ2luIiwiaWF0IjoxNTQ3Njk2OTY4LCJleHAiOjE1NDc3MDA1NjgsIm5iZiI6MTU0NzY5Njk2OCwianRpIjoiNklkVWNtcFlkSTRNb0Y1bCIsInN1YiI6NjcsInBydiI6IjViYTE5ZjAyODY5MTY0Y2M2MWJjNzk2NjY3ZGUxYjYwMjE4ZWVjMjUifQ.xl0zG4O0MKRAXCk5Hs5WVvBji22tnRIiCHXbIELeW3E"
-                )
-            })
+        Observable
+            .create<Int> {
+                val result = updateMatchRound(
+                    matchCurr.match_id,
+                    listViewRound.selectionModel.selectedItem.roundIndex,
+                    listViewRound.selectionModel.selectedItem.apply { status = 1 })
+                it.onNext(result)
+                it.onComplete()
+            }
             .compose(Transformer.io_main())
             .sub {
-                info(it.toString())
-                info(it.body().toString())
-                info(it.errorBody()?.string() ?: "error body")
+                if (it > 0 )
+                    toast("结束轮次成功")
+
+                val selectRoundIndex = listViewRound.selectionModel.selectedIndex
+                listViewRound.selectionModel.clearSelection()
+                listViewRound.selectionModel.select(selectRoundIndex)
             }
+
     }
 
     /**

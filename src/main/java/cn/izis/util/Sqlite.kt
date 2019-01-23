@@ -295,6 +295,7 @@ fun queryRoundsByMatchId(matchId: Int): MutableList<MatchRound> {
                     matchId = matchId
                 ).apply {
                     time_start = result.getLong("time_start")
+                    status = result.getInt("status")
                 }
             )
         }
@@ -458,6 +459,9 @@ fun queryGameInfo(matchId: Int,roundIndex:Int): MutableList<GameInfo> {
 
         conn.close()
     }
+    list.sortBy {
+        it.num
+    }
     return list
 }
 
@@ -505,6 +509,18 @@ fun updateMatchGame(
     return result
 }
 
-fun querySelfBlack(){
-
+fun updateMatchRound(
+    matchId: Int,
+    roundIndex: Int,
+    round: MatchRound
+): Int {
+    var result = 0
+    getConn()?.let{
+        val statement = it.createStatement()
+        val sql = "UPDATE match_round set status = '${round.status}' WHERE match_id = $matchId AND round_index = $roundIndex"
+        result = statement.executeUpdate(sql)
+        it.close()
+    }
+    return result
 }
+

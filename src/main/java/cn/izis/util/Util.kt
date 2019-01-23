@@ -28,9 +28,16 @@ private fun arrangeNext(matchId: Int, roundIndex: Int, matchUsers: MutableList<M
     val list_uaf = mutableListOf<UserApplyFrom>()
     val list_uafm = mutableListOf<UserApplyFromMessage>()
 
-    queryUsers(matchId).forEach {
+    val listUsers = queryUsers(matchId)
+    if (listUsers.size % 2 !=0 ){
+        listUsers.remove(MatchUser().apply { id = 9191 })
+    }
+    listUsers.forEach {
         list_uaf.add(UserApplyFrom(it.id))
     }
+//    if (list_uaf.size % 2 != 0)
+//        list_uaf.add(UserApplyFrom(9191))
+
     getConn()?.let { conn ->
         list_uaf.forEach {
             val uafm = UserApplyFromMessage()
@@ -57,9 +64,9 @@ private fun arrangeNext(matchId: Int, roundIndex: Int, matchUsers: MutableList<M
 
                 uafm.list = list
                 uafm.userid = it.userid
+                list_uafm.add(uafm)
             }
 
-            list_uafm.add(uafm)
         }
         conn.close()
     }
@@ -67,6 +74,8 @@ private fun arrangeNext(matchId: Int, roundIndex: Int, matchUsers: MutableList<M
     userSchedule.uafM_list = list_uafm
 
     userSchedule.MakeSchedule(asc)
+
+//    info(userSchedule.toString())
 
     val hungary = Hungary()
     hungary.Test(userSchedule, 0, 0, 0)
@@ -137,32 +146,31 @@ private fun arrangeNext(matchId: Int, roundIndex: Int, matchUsers: MutableList<M
 
             //第三步：更新数据库，创建新一轮对局和编排表
             if (selfBlackCurr) {
+                val first = matchUsers.filter { item ->
+                    item.id == it.userid
+                }[0]
+                val second = matchUsers.filter { item ->
+                    item.id == it.ouserid
+                }[0]
 
+                number = generate(first, second, matchId, roundIndex, listArrange, listGame, number,
+                    matchUsers.any { it.id == 9191 }
+                )
+            }else{
+                val first = matchUsers.filter { item ->
+                    item.id == it.ouserid
+                }[0]
+                val second = matchUsers.filter { item ->
+                    item.id == it.userid
+                }[0]
+
+                number = generate(first, second, matchId, roundIndex, listArrange, listGame, number,
+                    matchUsers.any { it.id == 9191 }
+                )
             }
+
+            conn.close()
         }
-    }
-
-
-    var matchUserLast: MatchUser? = null
-    if (matchUsers.size % 2 != 0) {
-        matchUserLast = matchUsers.removeAt(matchUsers.size - 1)
-    }
-
-    for (i in 0 until matchUsers.size step 2) {
-        val first = matchUsers[i]
-        val second = matchUsers[i + 1]
-
-        number = generate(first, second, matchId, 1, listArrange, listGame, number)
-    }
-
-    matchUserLast?.let { lastUser ->
-        val emptyUser = MatchUser().apply {
-            id = 9191
-            this.matchId = matchId
-            groupId = lastUser.groupId
-            name = "轮空"
-        }
-        number = generate(lastUser, emptyUser, matchId, 1, listArrange, listGame, number, true)
     }
 
     saveArranges(matchCurr.match_id, listArrange)
@@ -193,6 +201,7 @@ private fun arrangeFirst(matchId: Int, matchUsers: MutableList<MatchUser>) {
             groupId = lastUser.groupId
             name = "轮空"
         }
+        saveUsers(matchId, listOf(emptyUser))
         number = generate(lastUser, emptyUser, matchId, 1, listArrange, listGame, number, true)
     }
 
@@ -236,7 +245,15 @@ private fun generate(
         blackName = first.name
         whiteName = second.name
         gameName = "$blackName VS $whiteName"
-        status = if (hasEmpty) "胜" else "VS"
+        status = if (hasEmpty){
+            if (blackId == 9191)
+                "负"
+            else if (whiteId == 9191)
+                "胜"
+            else
+                "VS"
+        } else
+            "VS"
         if (hasEmpty) {
             blackScore = 2
             blackTotalScore = 2

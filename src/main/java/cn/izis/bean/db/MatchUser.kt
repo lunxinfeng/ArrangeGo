@@ -11,4 +11,10 @@ class MatchUser {
     var age: String = ""//年龄
     var matchId: Int = 0//赛事id
     var groupId = 0 //分组id
+
+    override fun equals(other: Any?): Boolean {
+        if (other is MatchUser)
+            return id == other.id
+        return super.equals(other)
+    }
 }
