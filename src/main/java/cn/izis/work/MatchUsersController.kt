@@ -86,7 +86,9 @@ class MatchUsersController: BaseController() {
             .compose(Transformer.io_main())
             .sub {
                 table_users.items.clear()
-                table_users.items.addAll(it)
+                val list = it.toMutableList()
+                list.remove(MatchUser().apply { id = 9191 })
+                table_users.items.addAll(list)
             }
     }
 

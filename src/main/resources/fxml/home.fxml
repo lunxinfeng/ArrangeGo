@@ -15,7 +15,6 @@
                   <Tab text="比赛信息"/>
                   <Tab text="参赛人员" />
                   <Tab text="比赛编排" />
-                  <Tab text="统计分析" />
                   <Tab text="历史赛事" />
                   <Tab text="帮助中心" />
                </tabs>

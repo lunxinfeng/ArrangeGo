@@ -28,7 +28,7 @@ class HomeController:BaseController() {
                 0 -> send(RxEvent.refreshMatchInfo)
                 1 -> send(RxEvent.refreshMatchUsers)
                 2 -> send(RxEvent.refreshMatchArrange)
-                4 -> send(RxEvent.refreshMatchHistory)
+                3 -> send(RxEvent.refreshMatchHistory)
             }
         }
 
@@ -52,8 +52,8 @@ class HomeController:BaseController() {
         tabPane.tabs[0].content = stageController.loadFxml("/fxml/tab_match_info.fxml")
         tabPane.tabs[1].content = stageController.loadFxml("/fxml/tab_match_users.fxml")
         tabPane.tabs[2].content = stageController.loadFxml("/fxml/tab_match_arrange.fxml")
-        tabPane.tabs[4].content = stageController.loadFxml("/fxml/tab_match_history.fxml")
-        tabPane.tabs[5].content = stageController.loadFxml("/fxml/tab_help_center.fxml")
+        tabPane.tabs[3].content = stageController.loadFxml("/fxml/tab_match_history.fxml")
+        tabPane.tabs[4].content = stageController.loadFxml("/fxml/tab_help_center.fxml")
     }
 
 }

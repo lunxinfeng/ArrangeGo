@@ -321,8 +321,8 @@ fun saveArranges(matchId: Int, arranges: List<Arrange>): Int {
                     " user_id integer," +
                     " other_id integer," +
                     " result text," +
-                    " score text," +
-                    " total_score text," +
+                    " score integer," +
+                    " total_score integer," +
                     " win_type text," +
                     " add_user text," +
                     " add_time text)"
@@ -342,8 +342,8 @@ fun saveArranges(matchId: Int, arranges: List<Arrange>): Int {
                 preStatement.setInt(4, arrange.userId)
                 preStatement.setInt(5, arrange.otherId)
                 preStatement.setString(6, arrange.result)
-                preStatement.setString(7, arrange.score)
-                preStatement.setString(8, arrange.total_score)
+                preStatement.setInt(7, arrange.score)
+                preStatement.setInt(8, arrange.total_score)
                 preStatement.setString(9, arrange.win_type)
                 preStatement.setInt(10, arrange.add_user)
                 preStatement.setString(11, arrange.add_time)
@@ -409,7 +409,7 @@ fun queryGameInfo(matchId: Int,roundIndex:Int): MutableList<GameInfo> {
         val tableIsExist = "select count(*)  from sqlite_master where type='table' and name = 'match_games'"
         val resultSet = statement.executeQuery(tableIsExist)
         if (resultSet.getInt("count(*)") != 0) {
-            val sql = "select a.user_id,a.score,a.total_score,g.* from match_games as g JOIN match_arranges as a on g.black_id = a.user_id or g.white_id = a.user_id where g.match_id = $matchId AND g.round_index = $roundIndex"
+            val sql = "select a.user_id,a.score,a.total_score,g.* from match_games as g JOIN match_arranges as a on g.black_id = a.user_id or g.white_id = a.user_id where g.match_id = $matchId AND g.round_index = $roundIndex AND a.match_id = $matchId AND a.round_index = $roundIndex"
             val result = statement.executeQuery(sql)
 
 

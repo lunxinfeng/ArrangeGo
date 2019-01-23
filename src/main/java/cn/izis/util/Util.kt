@@ -226,6 +226,10 @@ private fun generate(
         this.roundIndex = roundIndex
         userId = first.id
         otherId = second.id
+        if (hasEmpty && otherId == 9191) {
+            score = 2
+            total_score = 2
+        }
     }
     val white = Arrange().apply {
         this.matchId = matchId
@@ -233,6 +237,10 @@ private fun generate(
         this.roundIndex = roundIndex
         userId = second.id
         otherId = first.id
+        if (hasEmpty && otherId == 9191) {
+            score = 2
+            total_score = 2
+        }
     }
     listArrange.addAll(arrayOf(black, white))
 
@@ -254,10 +262,7 @@ private fun generate(
                 "VS"
         } else
             "VS"
-        if (hasEmpty) {
-            blackScore = 2
-            blackTotalScore = 2
-        }
+
     })
     return number1
 }

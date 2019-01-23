@@ -10,8 +10,8 @@ class Arrange {
 //    var userName = "" //自己姓名
 //    var otherName = "" //对方姓名
     var result = "" //比赛结果
-    var score = "" //
-    var total_score = "" //
+    var score = 0 //
+    var total_score = 0 //
     var win_type = "" //胜利类型
     var add_user = 0 //添加人
     var add_time = "" //添加时间

@@ -2,7 +2,9 @@
 
 package cn.izis.work
 
+import cn.izis.App
 import cn.izis.base.BaseController
+import cn.izis.base.stage_home
 import cn.izis.bean.GameInfo
 import cn.izis.bean.db.MatchRound
 import cn.izis.bean.db.MatchUser
@@ -18,6 +20,7 @@ import javafx.event.ActionEvent
 import javafx.scene.control.TableColumn
 import javafx.scene.control.TableView
 import javafx.scene.control.cell.PropertyValueFactory
+import javafx.scene.input.KeyCode
 import java.net.URL
 import java.util.*
 
@@ -88,10 +91,28 @@ class MatchArrangeController : BaseController() {
         }
     }
 
+    private fun configQuickKey(){
+        stageController?.getStage(stage_home)?.scene?.quickKey(KeyCode.ADD){
+            if (!btnWin.isDisable)
+                onWin(null)
+        }
+        stageController?.getStage(stage_home)?.scene?.quickKey(KeyCode.SUBTRACT){
+            if (!btnLose.isDisable)
+                onLose(null)
+        }
+        stageController?.getStage(stage_home)?.scene?.quickKey(KeyCode.EQUALS){
+            if (!btnPing.isDisable)
+                onPingJu(null)
+        }
+    }
+
     override fun onReceive(rxEvent: RxEvent) {
         super.onReceive(rxEvent)
         when (rxEvent.code) {
             RxEvent.refreshMatchArrange -> {
+                tableViewRound.selectionModel.clearSelection()
+
+                configQuickKey()
                 getRounds(matchCurr.match_id)
                 getMatchUsers(matchCurr.match_id)
                 listViewRound.selectionModel.selectedItem?.let {
@@ -207,7 +228,7 @@ class MatchArrangeController : BaseController() {
     /**
      * 设置结果 胜
      */
-    fun onWin(actionEvent: ActionEvent) {
+    fun onWin(actionEvent: ActionEvent?) {
         val matchId = matchCurr.match_id
         val roundIndex = listViewRound.selectionModel.selectedItem.roundIndex
         val gameInfo = tableViewRound.selectionModel.selectedItem.apply {
@@ -227,7 +248,7 @@ class MatchArrangeController : BaseController() {
     /**
      * 设置结果 负
      */
-    fun onLose(actionEvent: ActionEvent) {
+    fun onLose(actionEvent: ActionEvent?) {
         val matchId = matchCurr.match_id
         val roundIndex = listViewRound.selectionModel.selectedItem.roundIndex
         val gameInfo = tableViewRound.selectionModel.selectedItem.apply {
@@ -248,7 +269,7 @@ class MatchArrangeController : BaseController() {
     /**
      * 设置结果 和
      */
-    fun onPingJu(actionEvent: ActionEvent) {
+    fun onPingJu(actionEvent: ActionEvent?) {
         val matchId = matchCurr.match_id
         val roundIndex = listViewRound.selectionModel.selectedItem.roundIndex
         val gameInfo = tableViewRound.selectionModel.selectedItem.apply {
