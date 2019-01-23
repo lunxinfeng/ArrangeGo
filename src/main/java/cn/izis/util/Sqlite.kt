@@ -6,7 +6,7 @@ import java.lang.Exception
 import java.sql.DriverManager
 import java.sql.Types
 
-fun getConn() = DriverManager.getConnection("jdbc:sqlite:match.db")
+fun getConn() = DriverManager.getConnection("jdbc:sqlite:${getHomeDir()}/match.db")
 
 fun createMatch(match: Match): Int {
     getConn()?.let {
