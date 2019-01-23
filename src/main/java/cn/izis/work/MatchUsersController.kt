@@ -15,6 +15,7 @@ import javafx.scene.control.TableColumn
 import javafx.scene.control.TableView
 import javafx.scene.control.cell.PropertyValueFactory
 import javafx.scene.control.cell.TextFieldTableCell
+import javafx.scene.input.KeyCode
 import java.net.URL
 import java.util.*
 
@@ -73,6 +74,19 @@ class MatchUsersController: BaseController() {
         super.onReceive(rxEvent)
         when(rxEvent.code){
             RxEvent.refreshMatchUsers -> getUsers(matchCurr.match_id)
+            RxEvent.del_user -> delUser()
+        }
+    }
+
+    private fun delUser(){
+        table_users.selectionModel.selectedItem?.let {
+            hint("是否删除该选手：${it.name}?"){
+                val result = delUser(it.matchId,it.id)
+                if (result > 0){
+                    toast("删除选手成功")
+                    getUsers(matchCurr.match_id)
+                }
+            }
         }
     }
 
@@ -129,7 +143,7 @@ class MatchUsersController: BaseController() {
     fun onSaveUsers(actionEvent: ActionEvent?) {
         Observable
             .create<Int> { emmit ->
-                val result = saveUsers(1,table_users.items)
+                val result = saveUsers(matchCurr.match_id,table_users.items)
                 emmit.onNext(result)
                 emmit.onComplete()
             }

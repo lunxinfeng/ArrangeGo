@@ -26,7 +26,8 @@ fun createMatch(match: Match): Int {
                     " match_time_start text," +
                     " match_time_end text," +
                     " match_referee text," +
-                    " match_arrange text )"
+                    " match_arrange text" +
+                    " )"
             statement.executeUpdate(createMatchSql)
 
             val createMatchRoundSql = "create table match_round(" +
@@ -34,7 +35,8 @@ fun createMatch(match: Match): Int {
                     " match_id integer," +
                     " round_index integer," +
                     " status integer," +
-                    " time_start text)"
+                    " time_start text," +
+                    " CONSTRAINT a FOREIGN KEY (match_id) REFERENCES match (match_id) ON DELETE CASCADE)"
             statement.executeUpdate(createMatchRoundSql)
         }
 
@@ -195,7 +197,8 @@ fun saveUsers(matchId: Int, users: List<MatchUser>): Int {
                     " sex text," +
                     " company text," +
                     " phone text," +
-                    " age text)"
+                    " age text," +
+                    " CONSTRAINT a FOREIGN KEY (match_id) REFERENCES match (match_id) ON DELETE CASCADE)"
             statement.executeUpdate(createUsersSql)
         }
 
@@ -332,7 +335,8 @@ fun saveArranges(matchId: Int, arranges: List<Arrange>): Int {
                     " total_score integer," +
                     " win_type text," +
                     " add_user text," +
-                    " add_time text)"
+                    " add_time text," +
+                    " CONSTRAINT a FOREIGN KEY (match_id) REFERENCES match (match_id) ON DELETE CASCADE)"
             statement.executeUpdate(createUsersSql)
         }
 
@@ -380,7 +384,8 @@ fun saveGames(matchId: Int, games: List<Game>): Int {
                     " black_name text," +
                     " white_name text," +
                     " gameName text," +
-                    " status text)"
+                    " status text," +
+                    " CONSTRAINT a FOREIGN KEY (match_id) REFERENCES match (match_id) ON DELETE CASCADE)"
             statement.executeUpdate(createUsersSql)
         }
 
@@ -525,6 +530,30 @@ fun updateMatchRound(
     getConn()?.let{
         val statement = it.createStatement()
         val sql = "UPDATE match_round set status = '${round.status}' WHERE match_id = $matchId AND round_index = $roundIndex"
+        result = statement.executeUpdate(sql)
+        it.close()
+    }
+    return result
+}
+
+fun delMatch(matchId:Int): Int {
+    var result = 0
+    getConn()?.let{
+        val statement = it.createStatement()
+        val foreignKey = "PRAGMA foreign_keys=ON"
+        statement.executeUpdate(foreignKey)
+        val sql = "delete from match WHERE match_id = $matchId"
+        result = statement.executeUpdate(sql)
+        it.close()
+    }
+    return result
+}
+
+fun delUser(matchId: Int,userId:Int): Int {
+    var result = 0
+    getConn()?.let{
+        val statement = it.createStatement()
+        val sql = "delete from match_users WHERE match_id = $matchId AND id = $userId"
         result = statement.executeUpdate(sql)
         it.close()
     }

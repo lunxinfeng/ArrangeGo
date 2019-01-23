@@ -3,17 +3,17 @@
 package cn.izis.work
 
 import cn.izis.base.BaseController
+import cn.izis.base.stage_home
 import cn.izis.bean.db.Match
-import cn.izis.util.Transformer
-import cn.izis.util.info
-import cn.izis.util.queryAllMatchsWithOutRound
+import cn.izis.util.*
 import cn.izis.util.rx.RxEvent
-import cn.izis.util.sub
 import io.reactivex.Observable
+import javafx.scene.control.Alert
 import javafx.scene.control.TableColumn
 import javafx.scene.control.TableRow
 import javafx.scene.control.TableView
 import javafx.scene.control.cell.PropertyValueFactory
+import javafx.scene.input.KeyCode
 import java.net.URL
 import java.util.*
 
@@ -36,6 +36,23 @@ class MatchHistoryController : BaseController() {
         super.onReceive(rxEvent)
         when(rxEvent.code){
             RxEvent.refreshMatchHistory -> getHistoryMatchs()
+            RxEvent.del_match -> delMatch()
+        }
+    }
+
+    private fun delMatch(){
+        tableView.selectionModel.selectedItem?.let {
+            if (it.match_id == matchCurr.match_id){
+                toast("当前赛事不可删除")
+            }else{
+                hint("是否删除赛事：${it.match_name}?"){
+                    val result = delMatch(it.match_id)
+                    if (result > 0){
+                        toast("删除赛事成功")
+                        getHistoryMatchs()
+                    }
+                }
+            }
         }
     }
 
@@ -52,6 +69,7 @@ class MatchHistoryController : BaseController() {
                 if (event.clickCount == 2 && !row.isEmpty){
                     info(row.item.match_name)
                     matchCurr.copy(row.item)
+                    toast("切换赛事成功")
                 }
             }
             row

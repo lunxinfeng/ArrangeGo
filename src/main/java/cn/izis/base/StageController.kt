@@ -12,6 +12,10 @@ interface ControlledStage {
     fun setStageController(stageController: StageController)
 
     fun setStage(stage: Stage, name: String)
+
+    fun loadCompetition(){
+
+    }
 }
 
 class StageController {
@@ -40,6 +44,7 @@ class StageController {
         info("load fxml:$resource")
         val controlledStage = loader.getController<ControlledStage>()
         controlledStage.setStageController(this)
+        controlledStage.loadCompetition()
         return pane
     }
 
@@ -70,6 +75,8 @@ class StageController {
 
         //将设置好的Stage放到HashMap中
         this.addStage(name, stage)
+
+        controlledStage.loadCompetition()
     }
 
     fun showStage(name: String, owner: String? = null) {

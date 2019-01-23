@@ -26,6 +26,14 @@ public class RxEvent {
      */
     public static final int refreshMatchHistory = 5;
 //    public static final int refreshHelpCenter = 6;
+    /**
+     * 删除参赛用户
+     */
+    public static final int del_user = 7;
+    /**
+     * 删除赛事
+     */
+    public static final int del_match = 8;
 
 
     private int code;
