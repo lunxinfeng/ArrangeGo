@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import com.jfoenix.controls.JFXButton?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+
+<VBox styleClass="root" stylesheets="@../css/printer.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cn.izis.work.MatchPrinterController">
+   <children>
+      <VBox fx:id="vboxPrinter" alignment="TOP_CENTER" prefHeight="600.0" prefWidth="800.0" VBox.vgrow="ALWAYS">
+         <children>
+            <Label fx:id="label_title" text="赛事名称" />
+            <HBox styleClass="hbox_line">
+               <VBox.margin>
+                  <Insets top="10.0" />
+               </VBox.margin>
+            </HBox>
+            <StackPane fx:id="stackPaneContent" prefHeight="150.0" prefWidth="200.0" VBox.vgrow="ALWAYS">
+               <VBox.margin>
+                  <Insets bottom="10.0" top="10.0" />
+               </VBox.margin>
+            </StackPane>
+            <HBox prefHeight="100.0" prefWidth="200.0" styleClass="hbox_line" />
+            <HBox alignment="CENTER_LEFT" prefHeight="50.0">
+               <children>
+                  <Label fx:id="label_referee" text="裁判长：" />
+                  <Pane prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
+                  <Label fx:id="label_arrange" text="编排长：" />
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+      <HBox alignment="CENTER_RIGHT" spacing="20.0">
+         <children>
+            <JFXButton onAction="#onCancel" text="取消" />
+            <JFXButton onAction="#onPrint" text="打印" />
+         </children>
+         <VBox.margin>
+            <Insets />
+         </VBox.margin>
+      </HBox>
+   </children>
+   <padding>
+      <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
+   </padding>
+</VBox>

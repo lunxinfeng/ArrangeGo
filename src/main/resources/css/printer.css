@@ -1,0 +1,16 @@
+#vboxPrinter{
+    -fx-pref-width: 487;
+    -fx-pref-height: 734;
+    /*-fx-pref-width: 500;*/
+    /*-fx-pref-height: 600;*/
+}
+
+#label_title{
+    -fx-font-size: 22;
+    -fx-font-weight: bold;
+}
+
+.hbox_line{
+    -fx-pref-height: 1;
+    -fx-background-color: black;
+}

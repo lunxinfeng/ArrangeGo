@@ -34,6 +34,10 @@ public class RxEvent {
      * 删除赛事
      */
     public static final int del_match = 8;
+    /**
+     * 打印参赛名单
+     */
+    public static final int print_users = 9;
 
 
     private int code;

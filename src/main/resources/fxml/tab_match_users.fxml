@@ -32,6 +32,7 @@
                   <JFXButton onAction="#onImportExcel" text="Excel导入" />
                   <JFXButton onAction="#onSaveUsers" text="保存设置" />
                   <JFXButton onAction="#onExportExcel" text="导出名单" />
+                  <JFXButton onAction="#onPrintUsers" text="打印名单" />
                   <Pane VBox.vgrow="ALWAYS" />
                   <JFXButton onAction="#onArrange" text="电脑编号" />
                </children>

@@ -4,18 +4,23 @@ package cn.izis.work
 
 import cn.izis.base.BaseController
 import cn.izis.base.stage_home
+import cn.izis.base.stage_printer
 import cn.izis.bean.db.MatchUser
 import cn.izis.util.*
+import cn.izis.util.rx.RxBus
 import cn.izis.util.rx.RxEvent
 import io.reactivex.Observable
+import javafx.beans.value.ObservableValue
 import javafx.collections.ObservableList
 import javafx.event.ActionEvent
 import javafx.fxml.FXML
+import javafx.scene.control.TableCell
 import javafx.scene.control.TableColumn
 import javafx.scene.control.TableView
 import javafx.scene.control.cell.PropertyValueFactory
 import javafx.scene.control.cell.TextFieldTableCell
 import javafx.scene.input.KeyCode
+import javafx.util.Callback
 import java.net.URL
 import java.util.*
 
@@ -191,5 +196,29 @@ class MatchUsersController: BaseController() {
         table_users.refresh()
 
         onSaveUsers(null)
+    }
+
+    /**
+     * 打印名单
+     */
+    fun onPrintUsers(actionEvent: ActionEvent) {
+        stageController?.loadAndShow(stage_home,stage_printer, "/fxml/printer.fxml", "赛事打印")
+
+        val table = TableView<MatchUser>()
+        table.columnResizePolicy = table_users.columnResizePolicy
+        val columns = mutableListOf<TableColumn<MatchUser,String>>()
+        table_users.columns.forEach {
+            val column = TableColumn<MatchUser,String>()
+            column.text = it.text
+            column.cellValueFactory = it.cellValueFactory as Callback<TableColumn.CellDataFeatures<MatchUser, String>, ObservableValue<String>>?
+            column.cellFactory = it.cellFactory as Callback<TableColumn<MatchUser, String>, TableCell<MatchUser, String>>?
+
+            columns.add(column)
+        }
+        table.columns.clear()
+        table.columns.addAll(columns)
+        table.items.clear()
+        table.items.addAll(table_users.items.toList())
+        send(RxEvent.print_users,table)
     }
 }
